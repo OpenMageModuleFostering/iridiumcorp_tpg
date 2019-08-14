@@ -6,12 +6,19 @@
       </Iridiumcorp_Checkout>
    </modules>
    <global>
-   		<models>
+   	  <models>
 	    	<checkout>
 	    		<rewrite>
 			          <type_onepage>Iridiumcorp_Checkout_Model_Type_Onepage</type_onepage>
 			    </rewrite>
 	    	</checkout>
 	    </models>
+      <blocks>
+        <checkout>
+          <rewrite>
+            <onepage_payment_methods>Iridiumcorp_Checkout_Block_Onepage_Payment_Methods</onepage_payment_methods>
+          </rewrite>
+        </checkout>
+      </blocks>
    </global>
 </config>
