@@ -1,6 +1,8 @@
 <?php
 	
-	class TPG_ListItemList
+	require_once "app/code/local/Iridiumcorp/Tpg/Model/Source/HashMethod.php";
+	
+	class IRC_ListItemList
 	{
 		private $m_lilListItemList;
 				
@@ -22,7 +24,7 @@
 		
 		public function add($szName, $szValue, $boIsSelected)
 		{
-			$liListItem = new TPG_ListItem($szName, $szValue, $boIsSelected);
+			$liListItem = new IRC_ListItem($szName, $szValue, $boIsSelected);
 
 			$this->m_lilListItemList[] = $liListItem;
 		}
@@ -61,7 +63,7 @@
 		}
 	}
 
-	class TPG_ListItem
+	class IRC_ListItem
 	{
 		private $m_szName;
 	   	private $m_szValue;
@@ -92,7 +94,7 @@
 	    }
 	}
 
-	class TPG_PaymentFormHelper
+	class IRC_PaymentFormHelper
 	{
 		/**
 		 * Hash mechanism for hosted payment form trasaction
@@ -128,7 +130,7 @@
 		 * @param unknown_type $boPaymentFormDisplaysResult
 		 * @return unknown
 		 */
-		public static function calculateHashDigest($szMerchantID, $szPassword, $hmHashMethod, $szPreSharedKey, $nAmount, $nCurrencyCode, $szOrderID, $szTransactionType, $szTransactionDateTime, $szCallbackURL, $szOrderDescription, $szCustomerName, $szAddress1, $szAddress2, $szAddress3, $szAddress4, $szCity, $szState, $szPostCode, $nCountryCode, $boCV2Mandatory, $boAddress1Mandatory, $boCityMandatory, $boPostCodeMandatory, $boStateMandatory, $boCountryMandatory, $rdmResultdeliveryMethod, $szServerResultURL, $boPaymentFormDisplaysResult, $szServerResultURLCookieVariables, $szServerResultURLFormVariables, $szServerResultURLQueryStringVariables)
+		public static function calculateHashDigest($szMerchantID, $szPassword, $hmHashMethod, $szPreSharedKey, $nAmount, $nCurrencyCode, $szOrderID, $szTransactionType, $szTransactionDateTime, $szCallbackURL, $szOrderDescription, $szCustomerName, $szAddress1, $szAddress2, $szAddress3, $szAddress4, $szCity, $szState, $szPostCode, $nCountryCode, $boCV2Mandatory, $boAddress1Mandatory, $boCityMandatory, $boPostCodeMandatory, $boStateMandatory, $boCountryMandatory, $rdmResultdeliveryMethod, $szServerResultURL, $boPaymentFormDisplaysResult)
 		{
 			$szHashDigest = '';
 			$szStringBeforeHash;
@@ -159,10 +161,7 @@
 									'CountryMandatory='.$boCountryMandatory.'&'.
 									'ResultDeliveryMethod='.$rdmResultdeliveryMethod.'&'.
 									'ServerResultURL='.$szServerResultURL.'&'.
-									'PaymentFormDisplaysResult='.$boPaymentFormDisplaysResult.'&'.
-									'ServerResultURLCookieVariables='.$szServerResultURLCookieVariables.'&'.
-									'ServerResultURLFormVariables='.$szServerResultURLFormVariables.'&'.
-									'ServerResultURLQueryStringVariables='.$szServerResultURLQueryStringVariables;
+									'PaymentFormDisplaysResult='.$boPaymentFormDisplaysResult;
 			
 			if ($hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_MD5 ||
 				$hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_SHA1)
@@ -285,7 +284,7 @@
 					break;
 			}
 			
-			//$szHashDigest = strtoupper($szHashDigest);
+			$szHashDigest = strtoupper($szHashDigest);
 			
 			return $szHashDigest;
 		}
@@ -353,7 +352,7 @@
 			}
 			
 			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
+			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
 			{
 				$boMatch = true;
 			}
@@ -371,58 +370,35 @@
 		 * @return unknown
 		 */
 		public static function comparePaymentCompleteHashDigest($formVariables, $szPassword, $hmHashMethod, $szPreSharedKey)
-        {
-            $boMatch = false;
-            $szCalculatedHashDigest;
-            $szStringBeforeHash;
-            
-            if ($hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_MD5 ||
-                $hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_SHA1)
-            {
-                $szStringBeforeHash = 'PreSharedKey='.$szPreSharedKey.'&';
-            }
-
-            $szStringBeforeHash .=  'MerchantID=' . $formVariables['MerchantID'] . 
-                                    '&Password=' . $szPassword . 
-                                    '&StatusCode=' . $formVariables['StatusCode'] . 
-                                    '&Message=' . $formVariables['Message'] . 
-                                    '&PreviousStatusCode=' . $formVariables['PreviousStatusCode'] . 
-                                    '&PreviousMessage=' . $formVariables['PreviousMessage'] . 
-                                    '&CrossReference=' . $formVariables['CrossReference'] . 
-                                    '&AddressNumericCheckResult=' . $formVariables['AddressNumericCheckResult'] .
-                                    '&PostCodeCheckResult=' . $formVariables['PostCodeCheckResult'] . 
-                                    '&CV2CheckResult=' . $formVariables['CV2CheckResult'] . 
-                                    '&ThreeDSecureAuthenticationCheckResult=' . $formVariables['ThreeDSecureAuthenticationCheckResult'] . 
-                                    '&CardType=' . $formVariables['CardType'] . 
-                                    '&CardClass=' . $formVariables['CardClass'] . 
-                                    '&CardIssuer='. $formVariables['CardIssuer'] . 
-                                    '&CardIssuerCountryCode=' . $formVariables['CardIssuerCountryCode'] . 
-                                    '&Amount=' . $formVariables['Amount'] . 
-                                    '&CurrencyCode=' . $formVariables['CurrencyCode'] . 
-                                    '&OrderID=' . $formVariables['OrderID'] . 
-                                    '&TransactionType='. $formVariables['TransactionType'] . 
-                                    '&TransactionDateTime=' . $formVariables['TransactionDateTime'] . 
-                                    '&OrderDescription=' . $formVariables['OrderDescription'] . 
-                                    '&Address1=' . $formVariables['Address1'] . 
-                                    '&Address2=' . $formVariables['Address2'] . 
-                                    '&Address3=' . $formVariables['Address3'] . 
-                                    '&Address4=' . $formVariables['Address4'] . 
-                                    '&City=' . $formVariables['City'] . 
-                                    '&State=' . $formVariables['State'] . 
-                                    '&PostCode=' . $formVariables['PostCode'] . 
-                                    '&CountryCode=' . $formVariables['CountryCode'] . 
-                                    '&EmailAddress=' .$formVariables['EmailAddress'] . 
-                                    '&PhoneNumber=' . $formVariables['PhoneNumber'];
-            
-            $szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-            if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
-            {
-                $boMatch = true;
-            }
-            
-            return $boMatch;
-        }
-
+		{
+			$boMatch = false;
+			$szCalculatedHashDigest;
+			$szStringBeforeHash;
+			
+			$szStringBeforeHash = 'MerchantID='.$formVariables['MerchantID'].'&'.
+									'Password='.$szPassword.'&'.
+									'Amount='.$formVariables['Amount'].'&'.
+									'CurrencyCode='.$formVariables['CurrencyCode'].'&'.
+									'OrderID='.$formVariables['OrderID'].'&'.
+									'TransactionType='.$formVariables['TransactionType'].'&'.
+									'TransactionDateTime='.$formVariables['TransactionDateTime'].'&'.
+									'OrderDescription='.$formVariables['OrderDescription'];
+			
+			if ($hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_MD5 ||
+				$hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_SHA1)
+			{
+				$szStringBeforeHash = 'PreSharedKey='.$szPreSharedKey.'&'.$szStringBeforeHash;
+			}
+			
+			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
+			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
+			{
+				$boMatch = true;
+			}
+			
+			return $boMatch;
+		}
+		
 		/**
 		 * Hash validator mechanism for the 3D Secure Authentication required hash in the transparent redirect payment mode
 		 *
@@ -455,7 +431,7 @@
 			}
 			
 			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
+			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
 			{
 				$boMatch = true;
 			}
@@ -463,69 +439,6 @@
 			return $boMatch;
 		}
 		
-		/**
-		 * Convert a URL string to a name value array collection  
-		 *
-		 * @param unknown_type $szInputVariableString
-		 * @return unknown
-		 */
-		public static function getVariableCollectionFromString($szInputVariableString)
-		{
-			$arVariableCollection = array();
-			
-			$arURLVariableArray = explode('&', $szInputVariableString);
-			for($nCount = 0; $nCount < sizeof($arURLVariableArray); $nCount++)
-			{
-				$szNameValue = $arURLVariableArray[$nCount];
-				$arNameValue = explode('=', $szNameValue);
-				if(sizeof($arNameValue) == 1)
-				{
-					$arVariableCollection[$arNameValue[0]] = '';
-				}
-				else
-				{
-					$arVariableCollection[$arNameValue[0]] = $arNameValue[1];
-				}
-			}
-			
-			return ($arVariableCollection);
-		}
-		
-		/**
-		 * Hash validator mechanism for the SERVER and SERVER_PULL methods
-		 *
-		 * @param unknown_type $formVariables
-		 * @param unknown_type $szPassword
-		 * @param unknown_type $hmHashMethod
-		 * @param unknown_type $szPreSharedKey
-		 */
-		public static function compareServerHashDigest($formVariables, $szPassword, $hmHashMethod, $szPreSharedKey)
-		{
-			$boMatch = false;
-			$szHashDigest = isset($formVariables['HashDigest']) ? $formVariables['HashDigest'] : false;
-			$szMerchantID = isset($formVariables['MerchantID']) ? $formVariables['MerchantID'] : false;
-			$szCrossReference = isset($formVariables['CrossReference']) ? $formVariables['CrossReference'] : false;
-			$szOrderID = isset($formVariables['OrderID']) ? $formVariables['OrderID'] : false;
-			
-			$szStringBeforeHash = 'MerchantID='.$szMerchantID.'&'.
-									'Password='.$szPassword.'&'.
-									'CrossReference='.$szCrossReference.'&'.
-									'OrderID='.$szOrderID;
-			
-			if ($hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_MD5 ||
-				$hmHashMethod == Iridiumcorp_Tpg_Model_Source_HashMethod::HASH_METHOD_SHA1)
-			{
-				$szStringBeforeHash = 'PreSharedKey='.$szPreSharedKey.'&'.$szStringBeforeHash;
-			}
-			
-			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			
-			if(strtoupper($szHashDigest) === strtoupper($szCalculatedHashDigest))
-			{
-				$boMatch = true;
-			}
-			
-			return $boMatch;
-		}
+
     }
 ?>

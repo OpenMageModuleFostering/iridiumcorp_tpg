@@ -2,7 +2,7 @@
 
 include_once ("ThePaymentGateway/TPG_Common.php");
 
-class TPG_ISOCurrencies
+class IRC_ISOCurrencies
 {
 	/**
 	 * Get the list of ISO Currencies
@@ -11,7 +11,7 @@ class TPG_ISOCurrencies
 	 */
 	public static function getISOCurrencyList()
 	{
-		$iclISOCurrencyList = new TPG_ISOCurrencyList();
+		$iclISOCurrencyList = new IRC_ISOCurrencyList();
 		
 		$iclISOCurrencyList->add(634, "Qatari Rial","QAR", 2);
 	    $iclISOCurrencyList->add(566, "Naira", "NGN", 2);
@@ -64,7 +64,7 @@ class TPG_ISOCurrencies
 	    $iclISOCurrencyList->add(414, "Kuwaiti Dinar", "KWD", 3);
 	    $iclISOCurrencyList->add(604, "Nuevo Sol", "PEN", 2);
 	    $iclISOCurrencyList->add(702, "Singapore Dollar", "SGD", 2);
-	    $iclISOCurrencyList->add(862, "Venezuelan bolï¿½var", "VEB", 2);
+	    $iclISOCurrencyList->add(862, "Venezuelan bolívar", "VEB", 2);
 	    $iclISOCurrencyList->add(953, "CFP franc", "XPF", 0);
 	    $iclISOCurrencyList->add(558, "Cordoba Oro", "NIO", 2);
 	    $iclISOCurrencyList->add(348, "Forint", "HUF", 2);

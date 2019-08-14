@@ -11,9 +11,5 @@
       <active>true</active>
       <codePool>local</codePool>
     </Iridiumcorp_Checkout>
-    <Iridiumcorp_Sales>
-      <active>true</active>
-      <codePool>local</codePool>
-    </Iridiumcorp_Sales>
   </modules>
 </config>

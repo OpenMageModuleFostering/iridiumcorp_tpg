@@ -16,7 +16,6 @@
       <tpg_setup>
         <setup>
           <module>Iridiumcorp_Tpg</module>
-			<class>Iridiumcorp_Tpg_Model_Resource_Eav_Mysql4_Setup</class>
         </setup>
         <connection>
           <use>core_setup</use>
@@ -37,16 +36,6 @@
       <tpg>
         <class>Iridiumcorp_Tpg_Block</class>
       </tpg>
-      <payment>
-        <rewrite>
-          <info_cc>Iridiumcorp_Tpg_Block_Payment_Info_Cc</info_cc>
-        </rewrite>
-      </payment>
-      <adminhtml>
-        <rewrite>
-          <sales_order_payment>Iridiumcorp_Tpg_Block_Adminhtml_Sales_Order_Payment</sales_order_payment>
-        </rewrite>
-      </adminhtml>
     </blocks>
     <!-- Define the helper class type -->
     <helpers>
@@ -61,15 +50,6 @@
     </helpers>
   </global>
 
-  <adminhtml>
-    <layout>
-      <updates>
-        <tpg>
-          <file>tpg.xml</file>
-        </tpg>
-      </updates>
-    </layout>
-  </adminhtml>
   <frontend>
     <secure_url>
       <tpg>/tpg/standard</tpg>
@@ -100,13 +80,13 @@
       <tpg>
         <active>1</active>
         <model>tpg/direct</model>
+        <order_status>pending</order_status>
         <title>Iridium Corporation</title>
         <hashmethod>sha1</hashmethod>
         <paymentprocessordomain>iridiumcorp.net</paymentprocessordomain>
         <paymentprocessorport>443</paymentprocessorport>
         <hostedpaymentactionurl>https://mms.iridiumcorp.net/Pages/PublicPages/PaymentForm.aspx</hostedpaymentactionurl>
         <transparentredirectactionurl>https://mms.iridiumcorp.net/Pages/PublicPages/TransparentRedirect.aspx</transparentredirectactionurl>
-        <serverpullresultactionurl>https://mms.iridiumcorp.net/Pages/PublicPages/PaymentFormResultHandler.ashx</serverpullresultactionurl>
         <payment_action>capture</payment_action>
         <mode>direct</mode>
         <cv2mandatory>1</cv2mandatory>
@@ -115,9 +95,10 @@
         <statemandatory>1</statemandatory>
         <postcodemandatory>1</postcodemandatory>
         <countrymandatory>1</countrymandatory>
-        <resultdeliverymethod>SERVER_PULL</resultdeliverymethod>
+        <resultdeliverymethod>POST</resultdeliverymethod>
+        <serverresulturl></serverresulturl>
+        <paymentformdisplaysresult>0</paymentformdisplaysresult>
         <allowspecific>0</allowspecific>
-        <customstockmanagementenabled>1</customstockmanagementenabled>
       </tpg>
     </payment>
   </default>

@@ -1,8 +1,8 @@
 <?php
 	//accessing external files
-	require_once("TPG_Common.php");
+	require_once('TPG_Common.php');
 
-	class TPG_SOAPNamespace
+	class IRC_SOAPNamespace
 	{	
 		private $m_szNamespace;
 	    private $m_szPrefix;
@@ -16,14 +16,14 @@
 	      	return $this->m_szPrefix;
 	    }
 	     
-	    public function __construct($szPrefix, $szNamespace)
+	    public function __construct($szPrefix,$szNamespace)
 	    {
 	    	$this->m_szNamespace = $szNamespace;
 	    	$this->m_szPrefix = $szPrefix;
 	    }
 	}
 
-	class TPG_SOAPNamespaceList
+	class IRC_SOAPNamespaceList
 	{
 		private $m_lsnSOAPNamespaceList;
 		
@@ -32,7 +32,7 @@
 			if ($nIndex < 0 ||
 			   $nIndex >= count($this->m_lsnSOAPNamespaceList))
 			{
-				throw new Exception("Array index out of bounds");
+				throw new Exception('Array index out of bounds');
 			}
 			
 			return $this->m_lsnSOAPNamespaceList[$nIndex];
@@ -43,9 +43,39 @@
 			return count($this->m_lsnSOAPNamespaceList);
 		}
 		
-		public function add(TPG_SOAPNamespace $snSOAPNamespace)
+		private function add1(IRC_SOAPNamespace $snSOAPNamespace)
 		{
 			$this->m_lsnSOAPNamespaceList[] = $snSOAPNamespace;
+		}
+		private function add2($szPrefix, $szSOAPNamespace)
+		{
+			if (!is_string($szPrefix) || !is_string($szSOAPNamespace))
+			{
+				throw new Exception('Invalid parameter type');
+			}
+			
+			$this->m_lsnSOAPNamespaceList[] = new IRC_SOAPNamespace($szPrefix, $szSOAPNamespace);
+		}
+		
+		//function overloading
+		public function add()
+		{
+			$num_args = func_num_args();
+			$args = func_get_args();
+			
+			switch ($num_args)
+			{
+				case 1:
+					//$this->__call('add1', $args);
+					$this->add1($args[0]);
+					break;
+				case 3:
+					//$this->__call('add2', $args);
+					$this->add2($args[0], $args[1], $args[2]);
+					break;
+					default:
+						throw new Exception('Invalid number of parameters for fucntion Add');
+			}
 		}
 		
 		//constructor
@@ -55,7 +85,7 @@
 		}
 	}
 
-	class TPG_SOAPParameter
+	class IRC_SOAPParameter
 	{
 		private $m_szName;
 	  	private $m_szValue;
@@ -86,7 +116,7 @@
 	   	}
 	   	
 	   	//constructor
-	   	public function __construct($szName, $szValue, TPG_SOAPParamAttributeList $lspaSOAPParamAttributeList = null)
+	   	public function __construct($szName, $szValue, IRC_SOAPParamAttributeList $lspaSOAPParamAttributeList = null)
 	   	{
 	   		$nCount = 0;
 	   		$spaSOAPParamAttribute = null;
@@ -94,21 +124,21 @@
 	   		if (!is_string($szName) ||
 	   			!is_string($szValue))
 	   		{
-	   			throw new Exception("Invalid parameter type");
+	   			throw new Exception('Invalid parameter type');
 	   		}
 	   		
 	   		$this->m_szName = $szName;
 	   		//$this->m_szValue = SharedFunctions::replaceCharsInStringWithEntities($szValue);
 	   		$this->setValue($szValue);
 	   		
-	   		$this->m_lspSOAPParamList = new TPG_SOAPParamList();
-			$this->m_lspaSOAPParamAttributeList = new TPG_SOAPParamAttributeList();
+	   		$this->m_lspSOAPParamList = new IRC_SOAPParamList();
+			$this->m_lspaSOAPParamAttributeList = new IRC_SOAPParamAttributeList();
 	   		
 	   		if ($lspaSOAPParamAttributeList != null)
 	   		{
 	   			for ($nCount = 0; $nCount < $lspaSOAPParamAttributeList->getCount();$nCount++)
 	   			{
-	   				$spaSOAPParamAttribute = new TPG_SOAPParamAttribute($lspaSOAPParamAttributeList->getAt($nCount)->getName(), $lspaSOAPParamAttributeList->getAt($nCount)->getValue());
+	   				$spaSOAPParamAttribute = new IRC_SOAPParamAttribute($lspaSOAPParamAttributeList->getAt($nCount)->getName(), $lspaSOAPParamAttributeList->getAt($nCount)->getValue());
 	   				
 	   				$this->m_lspaSOAPParamAttributeList->add($spaSOAPParamAttribute);
 	   			}
@@ -123,8 +153,8 @@
 	   		$spaAttribute = null;
 	   		$sbString = null;
 	   		
-	   		$sbReturnString = "";
-	   		$sbReturnString .= "<" . $this->getName();
+	   		$sbReturnString = '';
+	   		$sbReturnString .= '<' . $this->getName();
 	   		
 	   		if ($this->m_lspaSOAPParamAttributeList != null)
 	   		{
@@ -134,25 +164,25 @@
 	   				
 	   				if ($spaAttribute != null)
 		   			{
-		   				$sbString = "";
-		   				$sbString .= " " .$spaAttribute->getName(). "=\"" . TPG_SharedFunctions::replaceCharsInStringWithEntities($spaAttribute->getValue()). "\"";
+		   				$sbString = '';
+		   				$sbString .= ' ' .$spaAttribute->getName(). '="' .IRC_SharedFunctions::replaceCharsInStringWithEntities($spaAttribute->getValue()). '"';
 		   				$sbReturnString .= (string)$sbString;
 		   			}
 	   			}
 	   		}
 	   		
 	   		if ($this->m_lspSOAPParamList->getCount() == 0 &&
-	   		    $this->getValue() == "")
+	   		    $this->getValue() == '')
 	   		{
-	   			$sbReturnString .= " />";
+	   			$sbReturnString .= ' />';
 	   		}
 	   		else
 	   		{
-	   			$sbReturnString .= ">";
+	   			$sbReturnString .= '>';
 	   			
-	   			if ($this->getValue() != "")
+	   			if ($this->getValue() != '')
 	   			{
-	   				$sbReturnString .= TPG_SharedFunctions::replaceCharsInStringWithEntities($this->getValue());
+	   				$sbReturnString .= IRC_SharedFunctions::replaceCharsInStringWithEntities($this->getValue());
 	   			}
 	   			
 	   			for ($nCount = 0; $nCount < $this->m_lspSOAPParamList->getCount(); $nCount++)
@@ -165,68 +195,75 @@
 	   				}
 	   			}
 	   			
-	   			$sbReturnString .= "</" . $this->getName() . ">";
+	   			$sbReturnString .= '</' . $this->getName() . '>';
 	   		}
 	   		
 	   		return (string)$sbReturnString;
 	   	}
 	}
 
-	class TPG_SOAPParamList
+	class IRC_SOAPParamList
 	{
 		private $m_lspSOAPParamList;
 		
-		function getCount()
-		{
-			return count($this->m_lspSOAPParamList);
-		}
-
 		public function getAt($nIndex)
 		{
 			if ($nIndex < 0 ||
 				$nIndex > count($this->m_lspSOAPParamList))
 			{
-				throw new Exception("Array index out of bounds");
+				throw new Exception('Array index out of bounds');
 			}
 			
 			return $this->m_lspSOAPParamList[$nIndex];
 		}
-
-		public function isSOAPParamInList($szTagNameToFind, $nIndex)
-		{
-			$spReturnParam = null;
-			$boFound = false;
-			$nFound = 0;
-			$nCount = 0;
-			$spCurrentParam = null;
-			
-			while(!$boFound &&
-					$nCount < $this->getCount())
-			{
-				$spCurrentParam = $this->getAt($nCount);
-				
-				if ($spCurrentParam->getName() == $szTagNameToFind)
-				{
-					if ($nFound == $nIndex)
-					{
-						$boFound = true;
-						$spReturnParam = $spCurrentParam;
-					}
-					else 
-					{
-						$nFound++;
-					}
-				}
-				
-				$nCount++;
-			}
-			
-			return $spReturnParam;
-		}		
 		
-		public function add(TPG_SOAPParameter $spSOAPParam)
+		function getCount()
+		{
+			return count($this->m_lspSOAPParamList);
+		}
+		
+		protected function add1(IRC_SOAPParameter $spSOAPParam)
 		{
 			$this->m_lspSOAPParamList[] = $spSOAPParam;
+		}
+		protected function add2($szName, $szValue)
+		{
+			$nReturnValue = -1;
+			
+			if (!is_string($szName) ||
+				!is_string($szValue))
+			{
+				throw new Exception('Invalid parameter type: '. $szName .', '. $szValue);
+			}
+				
+			if ($szName != '' &&
+				$szName != null)
+			{
+				$this->m_lspSOAPParamList[] = new IRC_SOAPParameter($szName, $szValue);
+			}
+			
+			return $nReturnValue;
+		}
+		
+		//overloading
+		public function add()
+		{
+			$num_args = func_num_args();
+			$args = func_get_args();
+			
+			switch ($num_args)
+			{
+				case 1:
+					//$this->__call('add1', $args);
+					$this->add1($args[0]);
+					break;
+				case 2:
+					//$this->__call('add2', $args);
+					$this->add2($args[0], $args[1]);
+					break;
+					default:
+						throw new Exception('Invalid number of parameters');
+			}
 		}
 		
 		//constructor
@@ -236,7 +273,7 @@
 		}
 	}
 
-	class TPG_SOAPParamAttribute
+	class IRC_SOAPParamAttribute
 	{
 		private $m_szName;
 	   	private $m_szValue;
@@ -256,7 +293,7 @@
 	   		if (!is_string($szName) ||
 	   			!is_string($szValue))
 	   		{
-	   			throw new Exception("Invalid parameter type");
+	   			throw new Exception('Invalid parameter type');
 	   		}
 	   		
 	   		$this->m_szName = $szName;
@@ -264,7 +301,7 @@
 	   	}
 	}
 
-	class TPG_SOAPParamAttributeList
+	class IRC_SOAPParamAttributeList
 	{
 		private $m_lspaSOAPParamAttributeAttributeList;
 		
@@ -273,7 +310,7 @@
 			if ($nIndex < 0 ||
 				$nIndex >= count($this->m_lspaSOAPParamAttributeAttributeList))
 			{
-				throw new Exception("Array index out of bounds");
+				throw new Exception('Array index out of bounds');
 			}
 			
 			return $this->m_lspaSOAPParamAttributeAttributeList[$nIndex];
@@ -283,9 +320,49 @@
 			return count($this->m_lspaSOAPParamAttributeAttributeList);
 		}
 		
-		public function add(TPG_SOAPParamAttribute $spaSOAPParamAttributeAttribute)
+		private function add1(IRC_SOAPParamAttribute $spaSOAPParamAttributeAttribute)
 		{
-			$this->m_lspaSOAPParamAttributeAttributeList[] = $spaSOAPParamAttributeAttribute;
+			$result = array_push($this->m_lspaSOAPParamAttributeAttributeList, $spaSOAPParamAttributeAttribute);
+			return $result;
+		}
+		private function add2($szName, $szValue)
+		{
+			$nReturnValue = -1;
+			
+			if (!is_string($szName) ||
+				!is_string($szValue))
+			{
+				throw new Exception('Invalid parameter type');
+			}
+			
+			if ($szName != '' &&
+				$szName != null)
+			{
+				$nReturnValue = array_push($this->m_lspaSOAPParamAttributeAttributeList, new IRC_SOAPParamAttribute($szName, $szValue));
+			}
+			
+			return $nReturnValue;
+		}
+		
+		
+		public function add()
+		{
+			$num_args = func_num_args();
+			$args = func_get_args();
+			
+			switch ($num_args)
+			{
+				case 1:
+					//$this->__call('add1', $args);
+					$this->add1($args[0]);
+					break;
+				case 2:
+					//$this->__call('add2', $args);
+					$this->add2($args[0], $args[1]);
+					break;
+					default:
+						throw new Exception('Invalid number of parameters for fucntion Add');
+			}
 		}
 		
 		//constructor
@@ -295,7 +372,7 @@
 		}
 	}
 
-	class TPG_SOAP
+	class IRC_SOAP
 	{
 		private $m_szMethod;
 	    private $m_szMethodURI;
@@ -350,10 +427,6 @@
 	    {
 	    	return $this->m_szSOAPPacket;
 	    }
-	    public function getXmlParser()
-	    {
-	    	return $this->m_xmlTag;
-	    }
 	    public function getXmlTag()
 	    {
 	    	return $this->m_xmlTag;
@@ -383,13 +456,13 @@
 	    	
 	    	// build the xml SOAP request
 	        // start with the XML version
-	    	$sbString = "";
-	    	$sbString .= "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
+	    	$sbString = '';
+	    	$sbString .= '<?xml version="1.0" encoding="utf-8" ?>';
 	    	
 	    	if ($this->m_lsnSOAPNamespaceList->getCount() == 0)
 	    	{
-	    		$szFirstNamespace = "http://schemas.xmlsoap.org/soap/envelope/";
-	    		$szFirstPrefix = "soap";
+	    		$szFirstNamespace = 'http://schemas.xmlsoap.org/soap/envelope/';
+	    		$szFirstPrefix = 'soap';
 	    	}
 			else
 			{
@@ -397,15 +470,15 @@
 				
 				if ($snNamespace == null)
 				{
-					$szFirstNamespace = "http://schemas.xmlsoap.org/soap/envelope/";
-					$szFirstPrefix = "soap";
+					$szFirstNamespace = 'http://schemas.xmlsoap.org/soap/envelope/';
+					$szFirstPrefix = 'soap';
 				}
 				else 
 				{
 					if ($snNamespace->getNamespace() == null ||
-						$snNamespace->getNamespace() == "")
+						$snNamespace->getNamespace() == '')
 					{
-						$szFirstNamespace = "http://schemas.xmlsoap.org/soap/envelope/";
+						$szFirstNamespace = 'http://schemas.xmlsoap.org/soap/envelope/';
 					}
 					else 
 					{
@@ -413,9 +486,9 @@
 					}
 					
 					if ($snNamespace->getPrefix() == null ||
-						$snNamespace->getPrefix() == "")
+						$snNamespace->getPrefix() == '')
 					{
-						$szFirstPrefix = "soap";
+						$szFirstPrefix = 'soap';
 					}
 					else 
 					{
@@ -424,8 +497,8 @@
 				}
 			}
 			
-			$sbString2 = "";
-			$sbString2 .= "<" .$szFirstPrefix. ":Envelope xmlns:" .$szFirstPrefix. "=\"" .$szFirstNamespace. "\"";
+			$sbString2 = '';
+			$sbString2 .= '<' .$szFirstPrefix. ':Envelope xmlns:' .$szFirstPrefix. '="' .$szFirstNamespace. '"';
 			
 			for ($nCount = 1; $nCount <$this->m_lsnSOAPNamespaceList->getCount(); $nCount++)
 			{
@@ -433,22 +506,22 @@
 				
 				if ($snNamespace != null)
 				{
-					if ($snNamespace->getNamespace() != "" &&
-						$snNamespace->getPrefix() != "")
+					if ($snNamespace->getNamespace() != '' &&
+						$snNamespace->getPrefix() != '')
 					{
-						$sbString2 .= " xmlns:" .$snNamespace->getPrefix(). "=\"" .$snNamespace->getNamespace(). "\"";
+						$sbString2 .= ' xmlns:' .$snNamespace->getPrefix(). '="' .$snNamespace->getNamespace(). '"';
 					}
 				}
 			}
 			
-			$sbString2 .= ">";
+			$sbString2 .= '>';
 			
 			$sbString .= (string)$sbString2;
-			$sbString2 = "";
-			$sbString2 .= "<" .$szFirstPrefix. ":Body>";
+			$sbString2 = '';
+			$sbString2 .= '<' .$szFirstPrefix. ':Body>';
 			$sbString .= (string)$sbString2;
-			$sbString2 = "";
-			$sbString2 .= "<" .$this->getMethod(). " xmlns=\"" .$this->getMethodURI(). "\">";
+			$sbString2 = '';
+			$sbString2 .= '<' .$this->getMethod(). ' xmlns="' .$this->getMethodURI(). '">';
 			$sbString .= (string)$sbString2;
 			
 			for ($nCount = 0;$nCount < $this->m_lspSOAPParamList->getCount(); $nCount++)
@@ -461,22 +534,25 @@
 				}
 			}
 			
-			$sbString2 = "";
-			$sbString2 .= "</" .$this->getMethod(). ">";
+			$sbString2 = '';
+			$sbString2 .= '</' .$this->getMethod(). '>';
 			$sbString .= (string)$sbString2;
-			$sbString2 = "";
-			$sbString2 .= "</" .$szFirstPrefix. ":Body></" .$szFirstPrefix. ":Envelope>";
+			$sbString2 = '';
+			$sbString2 .= '</' .$szFirstPrefix. ':Body></' .$szFirstPrefix. ':Envelope>';
 			$sbString .= (string)$sbString2;
 			
 			$this->m_szSOAPPacket = (string)$sbString;
 			$this->m_boPacketBuilt = true;
 	    }
 	    
-	    public function sendRequest()
+	    public function sendRequest(&$ResponseDocument, &$ResponseMethod)
 	    {
-	    	$szString = "";
+	    	$szString = '';	//response string
+	    	$sbString;
+	    	$XmlDoc;		//response in parsed array format
 	    	$boReturnValue = false;
-	    	$szUserAgent = "ThePaymentGateway SOAP Library PHP";    	
+	    	$szUserAgent = 'ThePaymentGateway SOAP Library PHP';
+	    	
 	    	
 	    	if (!$this->m_boPacketBuilt)
 	    	{
@@ -490,13 +566,13 @@
 	    	{
 		    	//intialising the curl for XML parsing
 		    	$cURL = curl_init();
-		    	
+
 		    	//http settings
-		    	$HttpHeader[] = "SOAPAction:". $this->getActionURI();
-		    	$HttpHeader[] = "Content-Type: text/xml; charset = utf-8";
-		    	$HttpHeader[] = "Connection: close";
+		    	$HttpHeader[] = 'SOAPAction:'. $this->getActionURI();
+		    	$HttpHeader[] = 'Content-Type: text/xml; charset = utf-8';
+		    	$HttpHeader[] = 'Connection: close';
 		    	
-		    	/*$http_options = array(CURLOPT_HEADER			=> false,
+		    	/*$http_options = array(	CURLOPT_HEADER			=> false,
 	        							CURLOPT_HTTPHEADER		=> $HttpHeader,
 	        							CURLOPT_POST			=> true,
 	        							CURLOPT_URL				=> $this->getURL(),
@@ -518,7 +594,7 @@
 	        	curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
 	        	curl_setopt($cURL, CURLOPT_ENCODING, "UTF-8");
 	        	curl_setopt($cURL, CURLOPT_SSL_VERIFYPEER, false);
-	        	
+
 	        	if ($this->getTimeout() != null)
 				{
 					curl_setopt($cURL, CURLOPT_TIMEOUT, $this->getTimeout());
@@ -530,32 +606,16 @@
 				$errorMsg = curl_error($cURL);//test
 				$header = curl_getinfo($cURL);//test
 				curl_close($cURL);
-				
+
 				$this->m_szLastResponse = $szString;
 				
-
-				$szString = str_replace("<soap:Body>", " ", $szString);
-				$szString = str_replace("</soap:Body>", " ", $szString);
+				$szString = str_replace("<soap:", '<soap', $szString);
+				$szString = str_replace("</soap:", '</soap', $szString);
+								
+				$XmlDoc = new SimpleXMLElement($szString);
+				$ResponseDocument = $XmlDoc->soapBody;
+				$ResponseMethod = $this->getMethod(). 'Response';
 				
-                $this->m_xmlParser = new TPG_XmlParser();
-
-                if (!$this->m_xmlParser->parseBuffer($szString))
-                {
-                    throw new Exception("Could not parse response string");
-                }
-                else
-                {
-                    $szResponsePathString = $this->m_szMethod."Response";
-
-                    $this->m_xmlTag = $this->m_xmlParser->getTag($szResponsePathString);
-
-                    if ($this->m_xmlTag == null)
-                    {
-                        throw new Exception("Couldn't find SOAP response tag: ".$szResponsePathString);
-                    }
-                    $boReturnValue = true;
-                }
-
 				$boReturnValue = true;
 	    	}
 	    	catch (Exception $exc)
@@ -563,19 +623,19 @@
 	    		$boReturnValue = false;
 	    		$m_eLastException = $exc;
 	    	}
-			
+
 			return $boReturnValue;
 	    }
 	    
-	    public function addParam($szName, $szValue, TPG_SOAPParamAttributeList $lspaSOAPParamAttributeList = null)
+	    public function addParam1($szName, $szValue, IRC_SOAPParamAttributeList $lspaSOAPParamAttributeList = null)
 	    {
 	    	$spSOAPParam;
 	    	
-	    	$spSOAPParam = new TPG_SOAPParameter($szName, $szValue, $lspaSOAPParamAttributeList);
+	    	$spSOAPParam = new IRC_SOAPParameter($szName, $szValue, $lspaSOAPParamAttributeList);
 	    	
 	    	$this->addParam2($spSOAPParam, true);
 	    }
-	    private function addParam2(TPG_SOAPParameter $spSOAPParam, $boOverWriteValue)
+	    public function addParam2(IRC_SOAPParameter $spSOAPParam, $boOverWriteValue)
 	    {
 			$lszHierarchicalNames;
 			$nCurrentIndex = 0;
@@ -594,9 +654,9 @@
 
 			// need to check the name of the incoming item to see if it is a
 	       	// complex soap parameter
-	        $lszHierarchicalNames = new TPG_StringList();
+	        $lszHierarchicalNames = new IRC_StringList();
 	        
-	        $lszHierarchicalNames = TPG_SharedFunctions::getStringListFromCharSeparatedString($spSOAPParam->getName(), ".");
+	        $lszHierarchicalNames = IRC_SharedFunctions::getStringListFromCharSeparatedString($spSOAPParam->getName(), '.');
 	        
 	        if ($lszHierarchicalNames->getCount() == 1)
 	        {
@@ -612,14 +672,14 @@
 	        		// get the current tag name
 	               	$szString = (string)$lszHierarchicalNames->getAt($nCount);
 	              	//continuework
-	               	$szTagNameToFind = TPG_SharedFunctions::getArrayNameAndIndex($szString, $nCurrentIndex);
+	               	$szTagNameToFind = IRC_SharedFunctions::getArrayNameAndIndex($szString, $nCurrentIndex);
 
 	             	// first thing is to try to find the tag in the list
 	             	if ($boFound ||
 	             		$nCount == 0)
 	             	{
 	             		// try to find this tag name in the list
-	                    $spWorkingSOAPParam = $lspParamList->isSOAPParamInList($szTagNameToFind, $nCurrentIndex);
+	                    $spWorkingSOAPParam = IRC_Functions::isSOAPParamInParamList($lspParamList, $szTagNameToFind, $nCurrentIndex);
 
 	                    if ($spWorkingSOAPParam == null)
 	                    {
@@ -646,7 +706,7 @@
 
 	                              	if ($spaAttribute != null)
 	                                {
-	                                	$spaNewAttribute = new TPG_SOAPParamAttribute($spaAttribute->getName(), $spaAttribute->getValue());
+	                                	$spaNewAttribute = new IRC_SOAPParamAttribute($spaAttribute->getName(), $spaAttribute->getValue());
 
 										$spWorkingSOAPParam->getSOAPParamAttributeList()->add($spaNewAttribute);
 	                              	}
@@ -661,7 +721,7 @@
 	                	// is this the last tag?
 	                    if ($nCount == ($lszHierarchicalNames->getCount() - 1))
 	                    {
-	                    	$lspaAttributeList = new TPG_SOAPParamAttributeList();
+	                    	$lspaAttributeList = new IRC_SOAPParamAttributeList();
 	                            
 	                        for ($nCount2 = 0; $nCount2 < $spSOAPParam->getSOAPParamAttributeList()->getCount(); $nCount2++)
 	                        {
@@ -671,18 +731,18 @@
 
 	                            if ($spaAttribute != null)
 	                            {
-	                            	$spaNewAttribute = new TPG_SOAPParamAttribute($spaAttribute->getName(), $spaAttribute->getValue());
+	                            	$spaNewAttribute = new IRC_SOAPParamAttribute($spaAttribute->getName(), $spaAttribute->getValue());
 	                                $lspaAttributeList->add($spaNewAttribute);
 	                            }
 	                      	}
 
-	                        $spNewSOAPParam = new TPG_SOAPParameter($szTagNameToFind, $spSOAPParam->getValue(), $lspaAttributeList);
+	                        $spNewSOAPParam = new IRC_SOAPParameter($szTagNameToFind, $spSOAPParam->getValue(), $lspaAttributeList);
 
 	                        $lspParamList->add($spNewSOAPParam);
 	                 	}
 	                    else
 	                    {
-	                    	$spNewSOAPParam = new TPG_SOAPParameter($szTagNameToFind, "", null);
+	                    	$spNewSOAPParam = new IRC_SOAPParameter($szTagNameToFind, '', null);
 	                        $lspParamList->add($spNewSOAPParam);
 	                        $lspParamList = $spNewSOAPParam->getSOAPParamList();
 	                    }
@@ -692,8 +752,46 @@
 	        
 	        $this->m_boPacketBuilt = false;
 	    }
-	        
-	    public function addParamAttribute($szName, $szParamAttributeName, $szParamAttributeValue)
+	    
+	   	//overloading for addParam
+	    public function addParam()
+	    {
+	    	//number of parameters passed into addParam()
+	    	$num_args = func_num_args();
+	    	//array of parameters passed into addParam()
+			$args = func_get_args();
+			
+			switch ($num_args)
+			{
+				case 2:
+					if (is_string($args[0]) &&
+						is_string($args[1]))
+					{
+						//$this->__call('addParam1',$args);
+						//$this->addParam1($args[0], $args[1], $args[3]);
+						$this->addParam1($args[0], $args[1], null);
+					}
+					elseif ($args[0] instanceof IRC_SOAPParameter &&
+							is_bool($args[1]))
+					{
+						//$this->__call('addParam2', $args);
+						$this->addParam2($args[0], $args[1]);
+					}
+					else 
+					{
+						throw new Exception('Invalid parameter list for function: addParam');
+					}
+					break;
+				case 3:
+					//$this->__call('addParam1', $args);
+					$this->addParam1($args[0], $args[1], $args[2]);
+					break;
+					default:
+						throw new Exception('Invalid number of parameters for function Add');
+			}
+	    }
+	    
+	    private function addParamAttribute1($szName, $szParamAttributeName, $szParamAttributeValue)
 	    {
 	    	$spSOAPParam;
 	    	$lspaSOAPParamAttributeList;
@@ -703,28 +801,61 @@
 	    		!is_string($szParamAttributeName) ||
 	    		!is_string($szParamAttributeValue))
 	    	{
-	    		throw new Exception("Invalid parameter type");
+	    		throw new Exception('Invalid parameter type');
 	    	}
 	    	
-	    	$lspaSOAPParamAttributeList = new TPG_SOAPParamAttributeList();
-	    	$spaSOAPParamAttribute = new TPG_SOAPParamAttribute($szParamAttributeName, $szParamAttributeValue);
+	    	$lspaSOAPParamAttributeList = new IRC_SOAPParamAttributeList();
+	    	$spaSOAPParamAttribute = new IRC_SOAPParamAttribute($szParamAttributeName, $szParamAttributeValue);
 	    	$lspaSOAPParamAttributeList->add($spaSOAPParamAttribute);
 	    	
-	    	$spSOAPParam = new TPG_SOAPParameter($szName, "", $lspaSOAPParamAttributeList);
+	    	$spSOAPParam = new IRC_SOAPParameter($szName, '', $lspaSOAPParamAttributeList);
 	    	
 	    	$this->addParam2($spSOAPParam, false);
+	    }
+	    private function addParamAttribute2($szName, IRC_SOAPParamAttribute $spaSOAPParamAttribute)
+	    {
+	    	$spSOAPParam;
+	    	$lspaSOAPParamAttributeList;
+	    	
+	    	$lspaSOAPParamAttributeList = new IRC_SOAPParamAttributeList();
+	    	$lspaSOAPParamAttributeList->add($spaSOAPParamAttribute);
+	    	
+	    	$spSOAPParam = new IRC_SOAPParameter($szName, '', $lspaSOAPParamAttributeList);
+	    	
+	    	$this->addParam2($spSOAPParam, false);
+	    }
+	    
+	    //overloading for addParamAttribute
+	    public function addParamAttribute()
+	    {
+	    	$num_args = func_num_args();
+			$args = func_get_args();
+			
+			switch ($num_args)
+			{
+				case 2:
+					//$this->__call('addParamAttribute2', $args);
+					$this->addParamAttribute2($args[0], $args[1]);
+					break;
+				case 3:
+					//$this->__call('addParamAttribute1', $args);
+					$this->addParamAttribute1($args[0], $args[1], $args[2]);
+					break;
+					default:
+						throw new Exception('Invalid number of parameters for fucntion Add');
+			}
 	    }
 	    
 	    //overloading constructor
 	    private function SOAP1($szMethod, $szMethodURI)
 	    {
-	    	$this->SOAP3($szMethod, $szMethodURI, null, "http://schemas.xmlsoap.org/soap/encoding/", true, null);
+	    	$this->SOAP3($szMethod, $szMethodURI, null, 'http://schemas.xmlsoap.org/soap/encoding/', true, null);
 	    }
 	    private function SOAP2($szMethod, $szMethodURI, $szURL)
 	    {
-	    	$this->SOAP3($szMethod, $szMethodURI, $szURL, "http://schemas.xmlsoap.org/soap/encoding/", true, null);
+	    	$this->SOAP3($szMethod, $szMethodURI, $szURL, 'http://schemas.xmlsoap.org/soap/encoding/', true, null);
 	    }
-	    private function SOAP3($szMethod, $szMethodURI, $szURL, $szSOAPEncoding, $boAddDefaultNamespaces, TPG_SOAPNamespaceList $lsnSOAPNamespaceList = null)
+	    private function SOAP3($szMethod, $szMethodURI, $szURL, $szSOAPEncoding, $boAddDefaultNamespaces, IRC_SOAPNamespaceList $lsnSOAPNamespaceList = null)
 	    {
 	    	$snSOAPNamespace;
 	       	$nCount = 0;
@@ -737,36 +868,36 @@
 	      	if ($this->m_szMethodURI != "" &&
 	          	$this->m_szMethod != "")
 	      	{
-	       		if ($this->m_szMethodURI[(strlen($this->m_szMethodURI) - 1)] == "/")
+	       		if ($this->m_szMethodURI[(strlen($this->m_szMethodURI) - 1)] == '/')
 	          	{
 	              	$this->m_szActionURI = $this->m_szMethodURI . $this->m_szMethod;
 	            }
 	            else
 	            {
-	              	$this->m_szActionURI = $this->m_szMethodURI . "/" . $this->m_szMethod;
+	              	$this->m_szActionURI = $this->m_szMethodURI . '/' . $this->m_szMethod;
 	            }
 	        }
 	        
-	        $this->m_lsnSOAPNamespaceList = new TPG_SOAPNamespaceList();
+	        $this->m_lsnSOAPNamespaceList = new IRC_SOAPNamespaceList();
 
 	      	if ($boAddDefaultNamespaces)
 	        {
-	        	$snSOAPNamespace = new TPG_SOAPNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
+	        	$snSOAPNamespace = new IRC_SOAPNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
 	          	$this->m_lsnSOAPNamespaceList->add($snSOAPNamespace);
-	            $snSOAPNamespace = new TPG_SOAPNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+	            $snSOAPNamespace = new IRC_SOAPNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
 	            $this->m_lsnSOAPNamespaceList->add($snSOAPNamespace);
-	           	$snSOAPNamespace = new TPG_SOAPNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
+	           	$snSOAPNamespace = new IRC_SOAPNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
 	            $this->m_lsnSOAPNamespaceList->add($snSOAPNamespace);
 	        }
 	        if ($lsnSOAPNamespaceList != null)
 	      	{
 	         	for ($nCount = 0; $nCount < count($lsnSOAPNamespaceList); $nCount++)
 	            {
-	             	$snSOAPNamespace = new TPG_SOAPNamespace($lsnSOAPNamespaceList->getAt($nCount)->getPrefix(), $lsnSOAPNamespaceList->getAt($nCount)->getNamespace());
+	             	$snSOAPNamespace = new IRC_SOAPNamespace($lsnSOAPNamespaceList->getAt($nCount)->getPrefix(), $lsnSOAPNamespaceList->getAt($nCount)->getNamespace());
 	              	$this->m_lsnSOAPNamespaceList->add($snSOAPNamespace);
 	            }
 	        }
-	        $this->m_lspSOAPParamList = new TPG_SOAPParamList();
+	        $this->m_lspSOAPParamList = new IRC_SOAPParamList();
 
 	        $this->m_boPacketBuilt = false;
 	    }
@@ -780,16 +911,58 @@
 			switch ($num_args)
 			{
 				case 2:
+					//$this->__call('SOAP1', $args);
 					$this->SOAP1($args[0], $args[1]);
 					break;
 				case 3:
+					//$this->__call('SOAP2', $args);
 					$this->SOAP2($args[0], $args[1], $args[2]);
 					break;
 				case 6:
+					//$this->__call('SOAP3', $args);
 					$this->SOAP3($args[0], $args[1], $args[2], $args[3], $args[4], $args[5]);
-				default:
-					throw new Exception("Invalid number of parameters for constructor SOAP");
+					default:
+						throw new Exception('Invalid number of parameters for constructor SOAP');
 			}
 	    }
 	}
-?>
+
+	class IRC_Functions
+	{
+		public static function isSOAPParamInParamList(IRC_SOAPParamList $lspParamList, $szTagNameToFind, $nIndex)
+		{
+			$spReturnParam = null;
+			$boFound = false;
+			$nFound = 0;
+			$nCount = 0;
+			$spCurrentParam = null;
+			
+			if ($lspParamList == null)
+			{
+				return (null);
+			}
+			
+			while(!$boFound &&
+					$nCount < $lspParamList->getCount())
+			{
+				$spCurrentParam = $lspParamList->getAt($nCount);
+				
+				if ($spCurrentParam->getName() == $szTagNameToFind)
+				{
+					if ($nFound == $nIndex)
+					{
+						$boFound = true;
+						$spReturnParam = $spCurrentParam;
+					}
+					else 
+					{
+						$nFound++;
+					}
+				}
+				
+				$nCount++;
+			}
+			
+			return $spReturnParam;
+		}
+	}

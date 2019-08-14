@@ -24,20 +24,11 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
         return $html;
     }
     
-    /**
-     * Build the redirect form for the Hosted Payment Form payment type
-     *
-     * @return unknown
-     */
     private function _redirectToHostedPaymentForm()
     {
     	$html = '';
     	$model = Mage::getModel('tpg/direct');
     	$szActionURL = $model->getConfigData('hostedpaymentactionurl');
-    	$cookies = Mage::getSingleton('core/cookie')->get();
-    	$szServerResultURLCookieVariables;
-    	$szServerResultURLFormVariables = '';
-    	$szServerResultURLQueryStringVariables = '';
     	
     	// create a Magento form
         $form = new Varien_Data_Form();
@@ -74,9 +65,6 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
         $form->addField("ResultDeliveryMethod", 'hidden', array('name'=>"ResultDeliveryMethod", 'value'=>Mage::getSingleton('checkout/session')->getResultdeliverymethod()));
         $form->addField("ServerResultURL", 'hidden', array('name'=>"ServerResultURL", 'value'=>Mage::getSingleton('checkout/session')->getServerresulturl()));
         $form->addField("PaymentFormDisplaysResult", 'hidden', array('name'=>"PaymentFormDisplaysResult", 'value'=>Mage::getSingleton('checkout/session')->getPaymentformdisplaysresult()));
-        $form->addField("ServerResultURLCookieVariables", 'hidden', array('name'=>"ServerResultURLCookieVariables", 'value'=>Mage::getSingleton('checkout/session')->getServerresulturlcookievariables()));
-        $form->addField("ServerResultURLFormVariables", 'hidden', array('name'=>"ServerResultURLFormVariables", 'value'=>Mage::getSingleton('checkout/session')->getServerresulturlformvariables()));
-        $form->addField("ServerResultURLQueryStringVariables", 'hidden', array('name'=>"ServerResultURLQueryStringVariables", 'value'=>Mage::getSingleton('checkout/session')->getServerresulturlquerystringvariables()));
 
         // reset the session items
         Mage::getSingleton('checkout/session')->setHashdigest(null)
@@ -105,10 +93,7 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
 			  		   							->setCountrymandatory(null)
 			  		   							->setResultdeliverymethod(null)
 			  		   							->setServerresulturl(null)
-			  		   							->setPaymentformdisplaysresult(null)
-			  		   							->setServerresulturlcookievariables(null)
-			  		   							->setServerresulturlformvariables(null)
-			  		   							->setServerresulturlquerystringvariables(null);
+			  		   							->setPaymentformdisplaysresult(null);
         
         $html = '<html><body>';
         $html.= $this->__('You will be redirected to a secure payment page in a few seconds.');
@@ -119,11 +104,6 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
     	return $html;
     }
     
-    /**
-     * Build the redirect form for the Transparent Redirect payment type
-     *
-     * @return unknown
-     */
     private function _redirectToTransparentRedirect()
     {
     	$html;
@@ -143,12 +123,6 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
     	return $html;
     }
     
-    /**
-     * Build the submit 
-     *
-     * @param unknown_type $szActionURL
-     * @return unknown
-     */
     private function _submitTransaction($szActionURL)
     {
     	$html = '';
@@ -223,12 +197,6 @@ class Iridiumcorp_Tpg_Block_Redirect extends Mage_Core_Block_Abstract
     	return $html;
     }
     
-    /**
-     * Build the form for the Transparent Redirect 3DSecure authentication payment 
-     *
-     * @param unknown_type $szActionURL
-     * @return unknown
-     */
     private function _submitPaRes($szActionURL)
     {
     	$html = '';

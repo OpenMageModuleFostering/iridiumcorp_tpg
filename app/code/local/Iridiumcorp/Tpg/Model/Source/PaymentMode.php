@@ -18,13 +18,11 @@ class Iridiumcorp_Tpg_Model_Source_PaymentMode
             array(
                 'value' => self::PAYMENT_MODE_HOSTED_PAYMENT_FORM,
                 'label' => Mage::helper('tpg')->__('Hosted Payment Form')
-            )
-        );
-        /*,
+            ),
             array(
                 'value' => self::PAYMENT_MODE_TRANSPARENT_REDIRECT,
                 'label' => Mage::helper('tpg')->__('Transparent Redirect')
             ),
-        );*/
+        );
     }
 }
