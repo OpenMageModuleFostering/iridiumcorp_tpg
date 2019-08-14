@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<config>
+  <sections>
+    <payment>
+      <groups>
+        <tpg translate="label">
+          <label>Iridium Corporation</label>
+          <comment>
+            <![CDATA[
+              <div style="color:Blue;font-weight:bold;">
+              Merchant Management System (MMS) <a href="https://mms.iridiumcorp.net" target="_blank">login</a>
+              </div>
+            ]]>
+          </comment>
+          <sort_order>670</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <title translate="label">
+              <label>Title</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>10</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </title>
+            <active translate="label">
+              <label>Enabled</label>
+              <sort_order>20</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </active>
+            <debug translate="label">
+              <label>Debug</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>30</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </debug>
+            <order_status translate="label">
+              <label>New order status</label>
+              <sort_order>40</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>tpg/source_orderStatus</source_model>
+              <sort_order>50</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </order_status>
+            <merchantid translate="label">
+              <label>Merchant ID</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>60</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </merchantid>
+            <password translate="label">
+              <label>Password</label>
+              <frontend_type>password</frontend_type>
+              <sort_order>70</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </password>
+            <presharedkey translate="label">
+              <label>Pre Shared Key</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>80</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </presharedkey>
+            <hashmethod translate="label">
+              <label>Hash Method</label>
+              <frontend_type>select</frontend_type>
+              <sort_order>81</sort_order>
+              <source_model>tpg/source_hashMethod</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </hashmethod>
+            <paymentprocessordomain translate="label">
+              <label>Payment Processor Domain</label>
+              <frontend_type>label</frontend_type>
+              <sort_order>100</sort_order>
+              <show_in_default>0</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </paymentprocessordomain>
+            <paymentprocessorport translate="label">
+              <label>Payment Processor Port</label>
+              <frontend_type>label</frontend_type>
+              <sort_order>110</sort_order>
+              <show_in_default>0</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </paymentprocessorport>
+            <payment_action translate="label">
+              <label>Payment Action</label>
+              <sort_order>120</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>tpg/source_paymentAction</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </payment_action>
+            <mode translate="label">
+              <label>Payment Integration Method</label>
+              <sort_order>130</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>tpg/source_paymentMode</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </mode>
+            <hostedpaymentactionurl>
+              <label>Hosted Payment Form Action URL</label>
+              <frontend_type>label</frontend_type>
+              <sort_order>131</sort_order>
+              <show_in_default>0</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </hostedpaymentactionurl>
+            <resultdeliverymethod>
+              <label>Result Delivery Method</label>
+              <sort_order>200</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>tpg/source_resultDeliveryMethod</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+              </comment>
+            </resultdeliverymethod>
+            <!-- <transparentredirectactionurl>
+              <label>Transparent Redirect Action URL</label>
+              <frontend_type>label</frontend_type>
+              <sort_order>132</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </transparentredirectactionurl> -->            
+            <serverpullresultactionurl>
+              <label>Server Pull Result Action URL</label>
+              <frontend_type>label</frontend_type>
+              <sort_order>133</sort_order>
+              <show_in_default>0</show_in_default>
+              <show_in_website>0</show_in_website>
+              <show_in_store>0</show_in_store>
+            </serverpullresultactionurl>
+            <cv2mandatory>
+              <label>CV2 Mandatory <![CDATA[<span style="color:Red;font-weight:bold;font-size:12px;">(ON FORM ONLY)</span>]]></label>
+              <sort_order>140</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment><![CDATA[<strong>Please note HERE</strong>: The above value is only applicable to Hosted Payment Form payment mode. If you want to change the CV2 behaviour, please log into the <span style="font-weight:bold;color:Blue;">MMS</span> and update your Account Settings]]></comment>
+            </cv2mandatory>
+            <address1mandatory>
+              <label>Address1 Mandatory</label>
+              <sort_order>150</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+              </comment>
+            </address1mandatory>
+            <citymandatory>
+              <label>City Mandatory</label>
+              <sort_order>160</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+              </comment>
+            </citymandatory>
+            <postcodemandatory>
+              <label>PostCode Mandatory</label>
+              <sort_order>170</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+              </comment>
+            </postcodemandatory>
+            <statemandatory>
+              <label>State Mandatory</label>
+              <sort_order>180</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+              </comment>
+            </statemandatory>
+            <countrymandatory>
+              <label>Country Mandatory</label>
+              <sort_order>190</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above value is only applicable to Hosted Payment Form payment mode]]>
+                </comment>
+            </countrymandatory>
+            <customstockmanagementenabled>
+              <label>Custom Stock Management Enabled</label>
+              <sort_order>210</sort_order>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>
+                <![CDATA[<strong>Please note</strong>: The above setting is only applicable to Magento version 1.4.1.0 and above]]>
+              </comment>
+            </customstockmanagementenabled>
+          </fields>
+        </tpg>
+      </groups>
+    </payment>
+  </sections>
+</config>

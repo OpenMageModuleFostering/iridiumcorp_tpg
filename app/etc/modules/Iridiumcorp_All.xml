@@ -1,0 +1,19 @@
+<config>
+  <modules>
+    <Iridiumcorp_Tpg>
+      <active>true</active>
+      <codePool>local</codePool>
+      <depends>
+        <Mage_Payment />
+      </depends>
+    </Iridiumcorp_Tpg>
+    <Iridiumcorp_Checkout>
+      <active>true</active>
+      <codePool>local</codePool>
+    </Iridiumcorp_Checkout>
+    <Iridiumcorp_Sales>
+      <active>true</active>
+      <codePool>local</codePool>
+    </Iridiumcorp_Sales>
+  </modules>
+</config>

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+      <Iridiumcorp_Sales>
+         <version>0.0.1</version>
+      </Iridiumcorp_Sales>
+    </modules>
+   <global>
+   	  <models>
+        <sales>
+          <rewrite>
+            <order>Iridiumcorp_Sales_Model_Order</order>
+            <order_invoice>Iridiumcorp_Sales_Model_Order_Invoice</order_invoice>
+			      <order_payment>Iridiumcorp_Sales_Model_Order_Payment</order_payment>
+            <service_quote>Iridiumcorp_Sales_Model_Service_Quote</service_quote>
+          </rewrite>
+        </sales>
+      </models>
+	  <sales>
+		<order>
+			<statuses>
+				<irc_paid translate="label">
+					<label>Iridiumcorp - Successful Payment</label>
+				</irc_paid>
+				<irc_pending_threed_secure translate="label">
+          <label>Iridiumcorp - Pending 3D Secure</label>
+        </irc_pending_threed_secure>
+        <irc_failed_threed_secure translate="label">
+        	<label>Iridiumcorp - Failed 3D Secure</label>
+        </irc_failed_threed_secure>
+				<irc_pending translate="label">
+					<label>Iridiumcorp - Pending Hosted Payment</label>
+				</irc_pending>
+				<irc_pending_hosted_payment translate="label">
+					<label>Iridiumcorp - Pending Hosted Payment</label>
+				</irc_pending_hosted_payment>
+				<irc_failed_hosted_payment translate="label">
+					<label>Iridiumcorp - Failed Hosted Payment</label>
+				</irc_failed_hosted_payment>
+        <irc_refunded translate="label">
+          <label>Iridiumcorp - Payment Refunded</label>
+        </irc_refunded>
+        <irc_voided translate="label">
+          <label>Iridiumcorp - Payment Voided</label>
+        </irc_voided>
+        <irc_preauth translate="label">
+          <label>Iridiumcorp - Payment PreAuthorized</label>
+        </irc_preauth>
+        <irc_collected translate="label">
+          <label>Iridiumcorp - Payment Collected</label>
+        </irc_collected>
+			</statuses>
+		</order>
+	  </sales>
+   </global>
+</config>

@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Iridiumcorp_Tpg",
+    "type": "magento-module",
+    "license": "OSL-v3.0",
+    "homepage": "",
+    "description": "Iridiumcorp payment extension compatible with Magento v 1.3, 1.4, 1.5, 1.6, 1.7 and 1.8",
+    "authors": [
+    {
+        "name": "IridiumCorp",
+        "email": "support@iridiumcorp.net"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
