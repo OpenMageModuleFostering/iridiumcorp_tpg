@@ -80,7 +80,6 @@
       <tpg>
         <active>1</active>
         <model>tpg/direct</model>
-        <order_status>pending</order_status>
         <title>Iridium Corporation</title>
         <hashmethod>sha1</hashmethod>
         <paymentprocessordomain>iridiumcorp.net</paymentprocessordomain>

@@ -140,9 +140,13 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
      */
     public function callbackhostedpaymentAction()
     {
-    	$error = false;
+    	$boError = false;
     	$formVariables = array();
     	$model = Mage::getModel('tpg/direct');
+    	$szOrderID = $this->getRequest()->getPost('OrderID');
+    	$order = Mage::getModel('sales/order');
+        $order->loadByIncrementId($szOrderID);
+        $szStatus = 'canceled';
     	
     	try
     	{
@@ -175,55 +179,67 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     		
     		if(!IRC_PaymentFormHelper::compareHostedPaymentFormHashDigest($formVariables, $szPassword, $hmHashMethod, $szPreSharedKey))
     		{
-    			$error = "The payment was rejected for a SECURITY reason: the incoming payment data was tampered with.";
+    			$boError = true;
+    			$szNotificationMessage = "The payment was rejected for a SECURITY reason: the incoming payment data was tampered with.";
     			Mage::log("The Hosted Payment Form transaction couldn't be completed for the following reason: ".$error. " Form variables: ".$formVariables);
     		}
     	}
     	catch (Exception $exc)
     	{
-    		$error = Iridiumcorp_Tpg_Model_Tpg_GlobalErrors::ERROR_183;
+    		$boError = true;
+    		$szNotificationMessage = Iridiumcorp_Tpg_Model_Tpg_GlobalErrors::ERROR_183;
     		Mage::logException($exc);
     		Mage::log($error." Order ID: ".$formVariables['OrderID'].". Exception details: ".$exc);
     	}
     	
     	// check the incoming hash digest
-    	if($error)
+    	if($boError)
     	{
-    		Mage::getSingleton('core/session')->addError($error);
-    		$this->_redirect('checkout/onepage/failure');
+    		// do nothing
     	}
     	else
     	{
+    		$szNotificationMessage = "Payment Processor Response: ".$formVariables['Message'];
     		switch ($formVariables['StatusCode'])
     		{
     			case "0":
     				// TODO : maybe to update the order processing status in the Magento backend
     				Mage::log("Hosted Payment Form transaction successfully completed. Transaction details: ".print_r($formVariables, 1));
-    				Mage::getSingleton('core/session')->addSuccess("Payment Processor Response: ".$formVariables['Message']);
-    				$this->_redirect('checkout/onepage/success');
+    				$szStatus = 'processing';
+    				$boError = false;
     				break;
     			case "20":
     				Mage::log("Duplicate Hosted Payment Form transaction. Transaction details: ".print_r($formVariables, 1));
     				$szNotificationMessage = "Payment Processor Response: ".$szMessage.". A duplicate transaction means that a transaction with these details has already been processed by the payment provider. The details of the original transaction - Previous Transaction Response: ".$formVariables['PreviousMessage'];
     				if($formVariables['PreviousStatusCode'] == "0")
     				{
-	    				Mage::getSingleton('core/session')->addSuccess($szNotificationMessage);
-	    				$this->_redirect('checkout/onepage/success');
+	    				$boError = false;
     				}
     				else
     				{
-	    				Mage::getSingleton('core/session')->addError($szNotificationMessage);
-	    				$this->_redirect('checkout/onepage/failure');
+	    				$boError = true;
     				}
     				break;
     			case "5":
     			case "30":
     			default:
     				Mage::log("Hosted Payment Form transaction couldn't be completed. Transaction details: ".print_r($formVariables, 1));
-    				Mage::getSingleton('core/session')->addError("Payment Processor Response: ".$formVariables['Message']);
-    				$this->_redirect('checkout/onepage/failure');
+    				$boError = true;
     				break;
     		}
+    	}
+    	
+    	$model->updateOrderState($order, $szStatus, $szNotificationMessage);
+			
+    	if($boError)
+    	{
+    		Mage::getSingleton('core/session')->addError($szNotificationMessage);
+    		$this->_redirect('checkout/onepage/failure');
+    	}
+    	else
+    	{
+    		Mage::getSingleton('core/session')->addSuccess($szNotificationMessage);
+    		$this->_redirect('checkout/onepage/success');
     	}
     }
     
@@ -335,8 +351,13 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     
     private function _paymentComplete($szPassword, $hmHashMethod, $szPreSharedKey)
     {
-    	$error = false;
+    	$boError = false;
     	$formVariables = array();
+    	$model = Mage::getModel('tpg/direct');
+    	$szOrderID = $this->getRequest()->getPost('OrderID');
+    	$order = Mage::getModel('sales/order');
+        $order->loadByIncrementId($szOrderID);
+        $szStatus = 'canceled';
 
 	    $formVariables['HashDigest'] = $this->getRequest()->getPost('HashDigest');
 	    $formVariables['MerchantID'] = $this->getRequest()->getPost('MerchantID');
@@ -362,47 +383,59 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
 	    
 	    if(!IRC_PaymentFormHelper::comparePaymentCompleteHashDigest($formVariables, $szPassword, $hmHashMethod, $szPreSharedKey))
     	{
-    		$error = "The payment was rejected for a SECURITY reason: the incoming payment data was tampered with.";
+    		$boError = true;
+    		$szNotificationMessage = "The payment was rejected for a SECURITY reason: the incoming payment data was tampered with.";
     		Mage::log("The Transparent Redirect transaction couldn't be completed for the following reason: ".$error." Form variables: ".print_r($formVariables, 1));
     	}
     	
-    	if($error)
+    	if($boError)
     	{
-    		Mage::getSingleton('core/session')->addError($error);
-    		$this->_redirect('checkout/onepage/failure');
+    		// do nothing
     	}
     	else
     	{
+    		$szNotificationMessage = "Payment Processor Response: ".$formVariables['Message'];
+    		
     		switch ($formVariables['StatusCode'])
     		{
     			case "0":
-    				// TODO : maybe to update the order processing status in the Magento backend
     				Mage::log("Transparent Redirect transaction successfully completed. Transaction details: ".print_r($formVariables, 1));
-    				Mage::getSingleton('core/session')->addSuccess("Payment Processor Response: ".$formVariables['Message']);
-    				$this->_redirect('checkout/onepage/success');
+    				$boError = false;
+    				$szStatus = 'processing';
     				break;
     			case "20":
     				Mage::log("Duplicate Transparent Redirect transaction. Transaction details: ".print_r($formVariables, 1));
     				$szNotificationMessage = "Payment Processor Response: ".$formVariables['Message'].". A duplicate transaction means that a transaction with these details has already been processed by the payment provider. The details of the original transaction - Previous Transaction Response: ".$formVariables['PreviousMessage'];
     				if($formVariables['PreviousStatusCode'] == "0")
     				{
-	    				Mage::getSingleton('core/session')->addSuccess($szNotificationMessage);
-	    				$this->_redirect('checkout/onepage/success');
+	    				$boError = false;
+	    				$szStatus = 'processing';
     				}
     				else
     				{
-	    				Mage::getSingleton('core/session')->addError($szNotificationMessage);
-	    				$this->_redirect('checkout/onepage/failure');
+	    				$boError = true;
     				}
     				break;
     			case "5":
     			case "30":
     			default:
     				Mage::log("Transparent Redirect transaction couldn't be completed. Transaction details: ".print_r($formVariables, 1));
-    				Mage::getSingleton('core/session')->addError("Payment Processor Response: ".$formVariables['Message']);
-    				$this->_redirect('checkout/onepage/failure');
+    				$boError = true;
     				break;
     		}
+    	}
+    	
+    	$model->updateOrderState($order, $szStatus, $szNotificationMessage);
+    	
+    	if($boError)
+    	{
+    		Mage::getSingleton('core/session')->addError($szNotificationMessage);
+    		$this->_redirect('checkout/onepage/failure');
+    	}
+    	else
+    	{
+    		Mage::getSingleton('core/session')->addSuccess($szNotificationMessage);
+    		$this->_redirect('checkout/onepage/success');
     	}
     }
 }

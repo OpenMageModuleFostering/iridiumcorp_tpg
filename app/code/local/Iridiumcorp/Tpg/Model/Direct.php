@@ -8,6 +8,7 @@ include ("Tpg/ISOCountries.php");
 // GLOBAL 3D Secure authorization result variables:
 $m_sz3DSecureMessage;
 $m_bo3DSecureError;
+$m_boPayInvoice;
 
 class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 {
@@ -144,6 +145,9 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 	 */
 	public function _runTransaction(Varien_Object $payment, $amount)
 	{
+		$GLOBALS['m_boPayInvoice'] = false;
+		$payment->setIsTransactionPending(true);
+		
 		$MerchantID = $this->getConfigData('merchantid');
 		$Password = $this->getConfigData('password');
 		$SecretKey = $this->getConfigData('secretkey');
@@ -284,6 +288,11 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 				case 0:
 					// status code of 0 - means transaction successful
 					$boError = false;
+					$GLOBALS['m_boPayInvoice'] = true;
+					$payment->setIsTransactionPending(false);
+					
+					$this->updateOrderState($order, 'processing', $szNotificationMessage);
+					
 					$szLogMessage = "Transaction successfully completed for OrderID: ".$szOrderID.". Result object details: ";
 					Mage::getSingleton('core/session')->addSuccess($szNotificationMessage);
 					break;
@@ -291,6 +300,8 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 					// status code of 3 - means 3D Secure authentication required
 					$boError = false;
 					$szLogMessage = "3D Secure Authentication required for OrderID: ".$szOrderID.". Result object details: ";
+					$order->setState(Mage_Sales_Model_Order::STATE_PENDING_PAYMENT, true, '3D Secure authentication required');
+					$GLOBALS['m_boPayInvoice'] = false;
 					
 					$szPaReq = $todTransactionOutputData->getThreeDSecureOutputData()->getPaREQ();
 					$szCrossReference = $todTransactionOutputData->getCrossReference();
@@ -355,6 +366,9 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 	 */
 	public function _redirectTransaction(Varien_Object $payment, $amount)
 	{
+		$GLOBALS['m_boPayInvoice'] = false;
+		$payment->setIsTransactionPending(true);
+		
 		$szMerchantID = $this->getConfigData('merchantid');
 		$szPassword = $this->getConfigData('password');
 		$szCallbackURL = Mage::getUrl('tpg/payment/callbackhostedpayment');
@@ -479,6 +493,9 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 	 */
 	public function _transparentRedirectTransaction(Varien_Object $payment, $amount)
 	{
+		$GLOBALS['m_boPayInvoice'] = false;
+		$payment->setIsTransactionPending(true);
+		
 		$szMerchantID = $this->getConfigData('merchantid');
 		$szPassword = $this->getConfigData('password');
 		$szPreSharedKey = $this->getConfigData('presharedkey');
@@ -575,7 +592,10 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 	 */
 	public function _run3DSecureTransaction($szPaRes, $szMD)
 	{
+		$szStatus = 'canceled';
 		$szOrderID = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+		$order = Mage::getModel('sales/order');
+        $order->loadByIncrementId($szOrderID);
 		
 		$MerchantID = $this->getConfigData('merchantid');
 		$Password = $this->getConfigData('password');
@@ -615,6 +635,7 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 					// status code of 0 - means transaction successful
 					$GLOBALS['m_bo3DSecureError'] = false;
 					$szLogMessage = "3D Secure transaction successfully completed for OrderID: ".$szOrderID.". Result object details: ";
+					$szStatus = 'processing';
 					break;
 				case 5:
 					// status code of 5 - means transaction declined
@@ -652,6 +673,8 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 			// log 3DS payment result
 			$szLogMessage = $szLogMessage.print_r($tdsarThreeDSecureAuthenticationResult, 1);
 			Mage::log($szLogMessage);
+			
+			$this->updateOrderState($order, $szStatus, $GLOBALS['m_sz3DSecureMessage']);
 		}
 	}
 	
@@ -750,5 +773,30 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 		}
 		
 		return $szISO3Code;
+	}
+	
+	public function updateOrderState($order, $szStatus, $szMessage)
+	{
+		if($order)
+		{
+			if($szStatus ==  'processing')
+			{
+				$order->addStatusToHistory($szStatus, $szMessage, false);
+				//$order->sendNewOrderEmail();
+				//$order->setEmailSent(true);
+				$order->save();
+			}
+			else if($szStatus == 'canceled')
+			{
+				$order->addStatusToHistory($szStatus, $szMessage, false);
+				$order->cancel();
+				$order->save();
+			}
+			else
+			{
+				$order->addStatusToHistory($szStatus, $szMessage, false);
+				$order->save();
+			}
+		}
 	}
 }
