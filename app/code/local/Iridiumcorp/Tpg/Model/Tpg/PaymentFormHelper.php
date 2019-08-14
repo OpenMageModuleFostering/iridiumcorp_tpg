@@ -284,7 +284,7 @@
 					break;
 			}
 			
-			$szHashDigest = strtoupper($szHashDigest);
+			//$szHashDigest = strtoupper($szHashDigest);
 			
 			return $szHashDigest;
 		}
@@ -352,7 +352,7 @@
 			}
 			
 			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
+			if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
 			{
 				$boMatch = true;
 			}
@@ -391,7 +391,7 @@
 			}
 			
 			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
+			if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
 			{
 				$boMatch = true;
 			}
@@ -431,7 +431,7 @@
 			}
 			
 			$szCalculatedHashDigest = self::_hashCalculator($hmHashMethod, $szPreSharedKey, $szStringBeforeHash);
-			if($formVariables['HashDigest'] == $szCalculatedHashDigest)
+			if(strtoupper($formVariables['HashDigest']) == strtoupper($szCalculatedHashDigest))
 			{
 				$boMatch = true;
 			}

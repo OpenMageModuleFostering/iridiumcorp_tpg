@@ -172,11 +172,11 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     		$formVariables['State'] = $this->getRequest()->getPost('State');
     		$formVariables['PostCode'] = $this->getRequest()->getPost('PostCode');
     		$formVariables['CountryCode'] = $this->getRequest()->getPost('CountryCode');
-    		
+    		Mage::log(print_r($formVariables, 1));
     		if(!IRC_PaymentFormHelper::compareHostedPaymentFormHashDigest($formVariables, $szPassword, $hmHashMethod, $szPreSharedKey))
     		{
     			$error = "The payment was rejected for a SECURITY reason: the incoming payment data was tampered with.";
-    			Mage::log("The Hosted Payment Form transaction couldn't be completed for the following reason: ".$error. " Form variables: ".$formVariables);
+    			Mage::log("The Hosted Payment Form transaction couldn't be completed for the following reason: ".$error. " Form variables: ".print_r($formVariables, 1));
     		}
     	}
     	catch (Exception $exc)
