@@ -107,42 +107,29 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 		}
 		else
 		{
-			// TODO : wrap this content with try/catch and log any exception
-			// check if the payment is a 3D Secure
-			if(Mage::getSingleton('checkout/session')->getSecure3d())
-			{
-				// this is a 3D Secure payment
-				$this->_run3DSecureTransaction($payment, $amount, Mage::getSingleton('checkout/session')->getPares(), Mage::getSingleton('checkout/session')->getMd());
-				 
-				// reset the property to default non 3DS
-				Mage::getSingleton('checkout/session')->setSecure3d(false);
-			}
-			else
-			{
-				// reset the 3DS properties for a fresh payment request
-				Mage::getSingleton('checkout/session')
-					->setMd(null)
-        			->setAcsurl(null)
-		  		   	->setPareq(null)
-		  		   	->setTermurl(null);
-				
-		  		// run a fresh payment request
-		  		switch ($this->getConfigData('mode'))
-		  		{
-		  			case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_DIRECT_API:
-		  				$this->_runTransaction($payment, $amount);
-		  				break;
-		  			case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_HOSTED_PAYMENT_FORM:
-		  				$this->_redirectTransaction($payment, $amount);
-		  				break;
-		  			case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_TRANSPARENT_REDIRECT:
-		  				$this->_transparentRedirectTransaction($payment, $amount);
-		  				break;
-		  			default:
-		  				Mage::throwException('Invalid payment type: '.$this->getConfigData('mode'));
-		  				break;
-		  		}
-			}
+			// reset the 3DS properties for a fresh payment request
+			Mage::getSingleton('checkout/session')
+				->setMd(null)
+        		->setAcsurl(null)
+		  	   	->setPareq(null)
+		  	   	->setTermurl(null);
+			
+		  	// run a fresh payment request
+		  	switch ($this->getConfigData('mode'))
+		  	{
+		  		case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_DIRECT_API:
+		  			$this->_runTransaction($payment, $amount);
+		  			break;
+		  		case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_HOSTED_PAYMENT_FORM:
+		  			$this->_redirectTransaction($payment, $amount);
+		  			break;
+		  		case Iridiumcorp_Tpg_Model_Source_PaymentMode::PAYMENT_MODE_TRANSPARENT_REDIRECT:
+		  			$this->_transparentRedirectTransaction($payment, $amount);
+		  			break;
+		  		default:
+		  			Mage::throwException('Invalid payment type: '.$this->getConfigData('mode'));
+		  			break;
+		  	}
 		}
 		
 		return $this;
@@ -586,7 +573,7 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 	 * @param string $szPaRes
 	 * @param string $szMD
 	 */
-	public function _run3DSecureTransaction(Varien_Object $payment, $amount, $szPaRes, $szMD)
+	public function _run3DSecureTransaction($szPaRes, $szMD)
 	{
 		$szOrderID = Mage::getSingleton('checkout/session')->getLastRealOrderId();
 		
@@ -626,7 +613,6 @@ class Iridiumcorp_Tpg_Model_Direct extends Mage_Payment_Model_Method_Abstract
 			{
 				case 0:
 					// status code of 0 - means transaction successful
-					//PaymentFormHelper::reportTransactionResults($CrossReference, $tdsarThreeDSecureAuthenticationResult->getStatusCode(), $tdsarThreeDSecureAuthenticationResult->getMessage(), $todTransactionOutputData->getCrossReference());
 					$GLOBALS['m_bo3DSecureError'] = false;
 					$szLogMessage = "3D Secure transaction successfully completed for OrderID: ".$szOrderID.". Result object details: ";
 					break;

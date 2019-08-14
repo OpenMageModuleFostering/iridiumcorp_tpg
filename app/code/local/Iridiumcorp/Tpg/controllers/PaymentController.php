@@ -72,7 +72,7 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     		$szMD = $this->getRequest()->getPost('MD');
     		
     		// complete the 3D Secure transaction with the 3D Authorization result
-    		Mage::getSingleton('checkout/type_onepage')->saveOrderAfter3DSecure($szPaRes, $szMD);
+    		Mage::getSingleton('tpg/direct')->_run3DSecureTransaction($szPaRes, $szMD);
     	}
     	catch (Exception $exc)
     	{
@@ -197,8 +197,7 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     		switch ($formVariables['StatusCode'])
     		{
     			case "0":
-    				Mage::getSingleton('checkout/type_onepage')->saveOrderAfterHostedPayment();
-    				
+    				// TODO : maybe to update the order processing status in the Magento backend
     				Mage::log("Hosted Payment Form transaction successfully completed. Transaction details: ".print_r($formVariables, 1));
     				Mage::getSingleton('core/session')->addSuccess("Payment Processor Response: ".$formVariables['Message']);
     				$this->_redirect('checkout/onepage/success');
@@ -377,9 +376,7 @@ class Iridiumcorp_Tpg_PaymentController extends Mage_Core_Controller_Front_Actio
     		switch ($formVariables['StatusCode'])
     		{
     			case "0":
-    				// TODO : replace with PCI compliant version of data saving
-    				Mage::getSingleton('checkout/type_onepage')->saveOrderAfterHostedPayment();
-    				
+    				// TODO : maybe to update the order processing status in the Magento backend
     				Mage::log("Transparent Redirect transaction successfully completed. Transaction details: ".print_r($formVariables, 1));
     				Mage::getSingleton('core/session')->addSuccess("Payment Processor Response: ".$formVariables['Message']);
     				$this->_redirect('checkout/onepage/success');
