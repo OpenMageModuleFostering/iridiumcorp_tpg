@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Iridiumcorp_Tpg",
+    "name": "OpenMageModuleFostering\/Iridiumcorp_Tpg",
     "type": "magento-module",
     "license": "OSL-v3.0",
     "homepage": "",
     "description": "Iridium Payment Extension",
     "authors": [
-    {
-        "name": "Iridium Support",
-        "email": "support@iridiumcorp.co.uk"
-    }
-],
+        {
+            "name": "Iridium Support",
+            "email": "support@iridiumcorp.co.uk"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
